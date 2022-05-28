@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const cli = require('nodemon/lib/cli');
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -25,6 +26,7 @@ async function run() {
         await client.connect()
 
         const toolsCollections = client.db("assignment12").collection("tools")
+        const ordersCollections = client.db("assignment12").collection("orders")
 
         app.get('/tools', async (req, res) => {
             const query = {}
@@ -38,6 +40,21 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const cursor = await toolsCollections.findOne(query)
             res.send(cursor)
+        })
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body
+            const postedData = await ordersCollections.insertOne(order)
+            res.send(postedData)
+        })
+
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email
+            console.log(email);
+            const query = { email: email }
+            const cursor = ordersCollections.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
         })
     }
     finally {
