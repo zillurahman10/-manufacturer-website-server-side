@@ -27,6 +27,7 @@ async function run() {
 
         const toolsCollections = client.db("assignment12").collection("tools")
         const ordersCollections = client.db("assignment12").collection("orders")
+        const reviewsCollections = client.db("assignment12").collection("review")
 
         app.get('/tools', async (req, res) => {
             const query = {}
@@ -55,6 +56,12 @@ async function run() {
             const cursor = ordersCollections.find(query)
             const result = await cursor.toArray()
             res.send(result)
+        })
+
+        app.post('/review', async (req, res) => {
+            const review = req.body
+            const postedData = await reviewsCollections.insertOne(review)
+            res.send(postedData)
         })
     }
     finally {
