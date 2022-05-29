@@ -63,6 +63,15 @@ async function run() {
             const postedData = await reviewsCollections.insertOne(review)
             res.send(postedData)
         })
+
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id
+            console.log(id);
+            const query = {}
+            const singleOrder = await ordersCollections.findOne(query)
+            console.log(singleOrder);
+            res.send(singleOrder)
+        })
     }
     finally {
 
