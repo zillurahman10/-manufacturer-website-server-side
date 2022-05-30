@@ -4,7 +4,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cli = require('nodemon/lib/cli');
 const app = express()
 const port = process.env.PORT || 5000
-// const stripe = require('stripe')(sk_test_51L4nTCGzjXOYSMj4E5akf12QTYG0vwGW84aLOFLTnGR999fE0jNUtUaUbVkmNg63zhSoB7HjGjVH80N3G6sQxWVb00QoFOJ6wF)
+const stripe = require('stripe')('sk_test_51L4nTCGzjXOYSMj4E5akf12QTYG0vwGW84aLOFLTnGR999fE0jNUtUaUbVkmNg63zhSoB7HjGjVH80N3G6sQxWVb00QoFOJ6wF')
 
 
 // middleware
@@ -82,11 +82,37 @@ async function run() {
             res.send(deleteOrder)
         })
 
+        app.patch('/tools/:id', async (req, res) => {
+            const quantity = req.body.quantity
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                quantity: quantity
+            };
+            const result = await toolsCollections.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+
         app.get('/review', async (req, res) => {
             const query = {}
             const cursor = reviewsCollections.find(query)
             const result = await cursor.toArray()
             res.send(result)
+        })
+
+        app.post('/create-payment-intent', async (req, res) => {
+            console.log(req.body)
+            // const order = req.body
+            // console.log(order);
+            // const price = order.tool.price
+            // const amount = price * 100
+            // const paymentIntent = await stripe.paymentIntents.create({
+            //     amount: amount,
+            //     currency: "usd",
+            //     payment_method_types: [card]
+            // })
+            // res.send({ clientSecret: paymentIntent.client_secret })
         })
     }
     finally {
